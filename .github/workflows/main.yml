@@ -1,0 +1,97 @@
+name: main
+env:
+  GRADLE_OPTS: >- 
+    -Dorg.gradle.configureondemand=true 
+    -Dorg.gradle.parallel=false 
+    -Dkotlin.incremental=false 
+    -Dorg.gradle.jvmargs="-Xmx3g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8"
+on:
+  push:
+    paths-ignore:
+      - '*.md'
+      - '*.yml'
+      - '*.properties'
+    branches:
+      - main
+  pull_request:
+    paths-ignore:
+      - '*.md'
+      - '*.yml'
+      - '*.properties'
+    branches:
+      - main
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: liberica
+          java-version: 17
+      - name: Run tests
+        run: ./gradlew check
+      - name: Bundle the build report
+        if: failure()
+        run: find . -type d -name 'reports' | zip -@ -r build-reports.zip
+      - name: Upload the build report
+        if: failure()
+        uses: actions/upload-artifact@master
+        with:
+          name: error-report
+          path: build-reports.zip
+  macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: liberica
+          java-version: 17
+      - name: Run macos tests
+        run: ./gradlew check
+      - name: Bundle the build report
+        if: failure()
+        run: find . -type d -name 'reports' | zip -@ -r build-reports.zip
+      - name: Upload the build report
+        if: failure()
+        uses: actions/upload-artifact@master
+        with:
+          name: error-report
+          path: build-reports.zip
+  version:
+    if: github.event_name == 'push'
+    needs:
+      - linux
+      - macos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: Install semantic-release and plugins
+        run: >
+          npm i -g
+          semantic-release
+          @semantic-release/changelog
+          @semantic-release/commit-analyzer
+          @semantic-release/git
+          @semantic-release/github
+          @google/semantic-release-replace-plugin
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
