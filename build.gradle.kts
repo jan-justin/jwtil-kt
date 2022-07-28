@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 @Suppress("Dsl_Scope_Violation")
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -23,7 +24,11 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.kotlin.serialization.json)
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(libs.kotlin.test)
