@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/jan-justin/jwtil-kt/compare/v1.0.1...v1.0.2) (2022-10-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency org.jetbrains.kotlinx:kotlinx-serialization-json to v1.4.1 ([a2afb34](https://github.com/jan-justin/jwtil-kt/commit/a2afb34c265a88ad07a71f02a87e2fcfe5923b24))
+
 ## [1.0.1](https://github.com/jan-justin/jwtil-kt/compare/v1.0.0...v1.0.1) (2022-09-29)
 
 
