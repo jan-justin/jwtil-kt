@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.7.20"
-kotlin-serialization-json = "1.4.0"
+kotlin-serialization-json = "1.4.1"
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
